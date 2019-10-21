@@ -4,7 +4,7 @@ def odd_sum(numbers_list):
     Args:
         numbers_list (list) - list of numbers
     Returns:
-        (int) - sum of all odd numbers form list
+        (int) - sum of all odda numbers form list
     """
     try:
         return sum([i for i in range(min(numbers_list), max(numbers_list)) if i % 2])
