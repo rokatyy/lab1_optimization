@@ -9,13 +9,26 @@ def if_palindrom(string):
     return string == string[::-1]
 
 
-def count_values_in_list(list, value):
+def count_values_in_list(_list, value):
     """
     This method returns count of value in list
     Args:
-        list (list)
+        _list (list)
         value (int|str|bool and etc)
     Returns:
         (int)
     """
-    return list.count(value)
+    return _list.count(value)
+
+
+def find_most_duplicate_value(_list):
+    """
+    This method finds most duplicate value from list
+    Args:
+        _list (list)
+    Returns:
+        (str/bool/int) - anything that list contains
+    """
+    return max(set(_list), key = _list.count)
+
+
