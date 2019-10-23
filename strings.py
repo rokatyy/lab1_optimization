@@ -9,7 +9,7 @@ def if_palindrom(string):
     return string == string[::-1]
 
 
-def count_same_values_in_list(list, value):
+def count_values_in_list(list, value):
     """
     This method returns count of value in list
     Args:
