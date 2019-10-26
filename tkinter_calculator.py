@@ -1,161 +1,101 @@
-# Python program to create a simple GUI
-# calculator using Tkinter
-
-# import everything from tkinter module
 from tkinter import *
+from tkinter import messagebox
+from tkinter import ttk
+import math
+import sys
 
-# globally declare the expression variable
-expression = ""
+root = Tk()
+root.title("Calculator")
 
+bttn_list = [
+"7", "8", "9", "+", "*",
+"4", "5", "6", "-", "/",
+"1", "2", "3",  "ln", "xⁿ",
+"0", ".", "±",  "(",
+")", "π", "e", "sin", "cos", "abs",
+"√2","n!", "Clear", "=", "Exit"]
 
-# Function to update expressiom
-# in the text entry box
-def press(num):
-    # point out the global expression variable
-    global expression
+r = 1
+c = 0
+for i in bttn_list:
+    rel = ""
+    cmd=lambda x=i: calc(x)
+    ttk.Button(root, text=i, command = cmd, width = 10).grid(row=r, column = c)
+    c += 1
+    if c > 4:
+        c = 0
+        r += 1
 
-    # concatenation of string
-    expression = expression + str(num)
+calc_entry = Entry(root, width = 33)
+calc_entry.grid(row=0, column=0, columnspan=5)
 
-    # update the expression by using set method
-    equation.set(expression)
+#логика калькулятора
+def calc(key):
+    global memory
+    if key == "=" or key == "sin" or key == "cos" or key == "ln" or key == "abs" or key == "√2" or key == "n!" or key == "xⁿ":
+#исключение написания слов
+        str1 = "-+0123456789.*/)("
+        if not calc_entry.get():
+            messagebox.showerror("Error!", "You did not enter the number!")
+            return
+        for char in calc_entry.get():
+            if char not in str1:
+                messagebox.showerror("Error!", "You did not enter the number!")
+                return
 
+    if key == "=":
+#исчисления
+        try:
+            result = eval(calc_entry.get())
+            calc_entry.insert(END, "=" + str(result))
+        except:
+            calc_entry.insert(END, "Error!")
+            messagebox.showerror("Error!", "Check the correctness of data")
 
-# Function to evaluate the final expression
-def equalpress():
-    # Try and except statement is used
-    # for handling the errors like zero
-    # division error etc.
+#очищение поля ввода
+    elif key == "Clear":
+        calc_entry.delete(0, END)
 
-    # Put that code inside the try block
-    # which may generate the error
-    try:
+    elif key == "±":
+        if "=" in calc_entry.get():
+            calc_entry.delete(0, END)
+        try:
+            if calc_entry.get()[0] == "-":
+                calc_entry.delete(0)
+            else:
+                calc_entry.insert(0, "-")
+        except IndexError:
+            pass
 
-        global expression
+    elif key == "π":
+        calc_entry.insert(END, math.pi)
 
-        # eval function evaluate the expression
-        # and str function convert the result
-        # into string
-        total = str(eval(expression))
+    elif key == "e":
+        calc_entry.insert(END, math.e)
 
-        equation.set(total)
-
-        # initialze the expression variable
-        # by empty string
-        expression = ""
-
-    # if error is generate then handle
-    # by the except block
-    except:
-
-        equation.set(" error ")
-        expression = ""
-
-
-# Function to clear the contents
-# of text entry box
-def clear():
-    global expression
-    expression = ""
-    equation.set("")
-
-
-# Driver code
-if __name__ == "__main__":
-    # create a GUI window
-    gui = Tk()
-
-    # set the background colour of GUI window
-    gui.configure(background="light green")
-
-    # set the title of GUI window
-    gui.title("Simple Calculator")
-
-    # set the configuration of GUI window
-    gui.geometry("365x141")
-
-    # StringVar() is the variable class
-    # we create an instance of this class
-    equation = StringVar()
-
-    # create the text entry box for
-    # showing the expression .
-    expression_field = Entry(gui, textvariable=equation)
-
-    # grid method is used for placing
-    # the widgets at respective positions
-    # in table like structure .
-    expression_field.grid(columnspan=4, ipadx=70)
-
-    equation.set('enter expressions using calculator buttons')
-
-    # create a Buttons and place at a particular
-    # location inside the root window .
-    # when user press the button, the command or
-    # function affiliated to that button is executed .
-    button1 = Button(gui, text=' 1 ', fg='black', bg='red',
-                     command=lambda: press(1), height=1, width=7)
-    button1.grid(row=2, column=0)
-
-    button2 = Button(gui, text=' 2 ', fg='black', bg='red',
-                     command=lambda: press(2), height=1, width=7)
-    button2.grid(row=2, column=1)
-
-    button3 = Button(gui, text=' 3 ', fg='black', bg='red',
-                     command=lambda: press(3), height=1, width=7)
-    button3.grid(row=2, column=2)
-
-    button4 = Button(gui, text=' 4 ', fg='black', bg='red',
-                     command=lambda: press(4), height=1, width=7)
-    button4.grid(row=3, column=0)
-
-    button5 = Button(gui, text=' 5 ', fg='black', bg='red',
-                     command=lambda: press(5), height=1, width=7)
-    button5.grid(row=3, column=1)
-
-    button6 = Button(gui, text=' 6 ', fg='black', bg='red',
-                     command=lambda: press(6), height=1, width=7)
-    button6.grid(row=3, column=2)
-
-    button7 = Button(gui, text=' 7 ', fg='black', bg='red',
-                     command=lambda: press(7), height=1, width=7)
-    button7.grid(row=4, column=0)
-
-    button8 = Button(gui, text=' 8 ', fg='black', bg='red',
-                     command=lambda: press(8), height=1, width=7)
-    button8.grid(row=4, column=1)
-
-    button9 = Button(gui, text=' 9 ', fg='black', bg='red',
-                     command=lambda: press(9), height=1, width=7)
-    button9.grid(row=4, column=2)
-
-    button0 = Button(gui, text=' 0 ', fg='black', bg='red',
-                     command=lambda: press(0), height=1, width=7)
-    button0.grid(row=5, column=0)
-
-    plus = Button(gui, text=' + ', fg='black', bg='red',
-                  command=lambda: press("+"), height=1, width=7)
-    plus.grid(row=2, column=3)
-
-    minus = Button(gui, text=' - ', fg='black', bg='red',
-                   command=lambda: press("-"), height=1, width=7)
-    minus.grid(row=3, column=3)
-
-    multiply = Button(gui, text=' * ', fg='black', bg='red',
-                      command=lambda: press("*"), height=1, width=7)
-    multiply.grid(row=4, column=3)
-
-    divide = Button(gui, text=' / ', fg='black', bg='red',
-                    command=lambda: press("/"), height=1, width=7)
-    divide.grid(row=5, column=3)
-
-    equal = Button(gui, text=' = ', fg='black', bg='red',
-                   command=equalpress, height=1, width=7)
-    equal.grid(row=5, column=2)
-
-    clear = Button(gui, text='Clear', fg='black', bg='red',
-                   command=clear, height=1, width=7)
-    clear.grid(row=5, column='1')
-
-    # start the GUI
-    gui.mainloop()
+    elif key == "Exit":
+        root.after(1, root.destroy)
+        sys.exit
+    elif key == "xⁿ":
+        calc_entry.insert(END, "**")
+    elif key == "sin":
+        calc_entry.insert(END, "=" + str(math.sin(float(calc_entry.get()))))
+    elif key == "cos":
+        calc_entry.insert(END, "=" + str(math.cos(float(calc_entry.get()))))
+    elif key == "(":
+        calc_entry.insert(END, "(")
+    elif key == ")":
+        calc_entry.insert(END, ")")
+    elif key == "n!":
+        calc_entry.insert(END, "=" + str(math.factorial(float(calc_entry.get()))))
+    elif key == "√2":
+        calc_entry.insert(END, "=" + str(math.sqrt(float(calc_entry.get()))))
+    elif key == "ln":
+        calc_entry.insert(END, "=" + str(math.log(float(calc_entry.get()))))
+    elif key == "abs":
+        calc_entry.insert(END, "=" + str(math.fabs(float(calc_entry.get()))))
+    else:
+        if "=" in calc_entry.get():
+            calc_entry.delete(0, END)
+        calc_entry.insert(END, key)
+root.mainloop()
