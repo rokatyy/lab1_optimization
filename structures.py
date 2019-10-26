@@ -26,8 +26,6 @@ class students:
     def convert_list_to_dict_with_unique_numbers(self):
         """
         This method converts students list to students dictionary where each student has unique identification number
-        Args:
-            students_list (list) - list of dictionaries
         Returns:
             students_dict (dict) - dict of dicts
         """
