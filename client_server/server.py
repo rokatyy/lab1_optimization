@@ -41,7 +41,6 @@ class aircraft_info:
         self.data = read_csv(self.file_path)
 
 
-
 a = aircraft_info(aircraft_info_file_path)
 a.read_secret_file()
 

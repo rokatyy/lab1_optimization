@@ -1,5 +1,5 @@
 import numpy as np
-from math import sin, cos, exp
+from math import sin, cos
 import scipy.optimize as sopt
 from scipy.optimize import minimize_scalar
 
