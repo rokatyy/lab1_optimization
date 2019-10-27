@@ -11,7 +11,7 @@ def solve_equation_system(data):
         This method gets equation coefs and free members and returns
         solving a system of linear equations using the Gauss method
         Args:
-            data - coefs in csv file
+            data (numpy csv file object)- coefs in csv file
         Returns:
             (array) - solving a system of linear equations
     """
