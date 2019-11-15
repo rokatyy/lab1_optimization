@@ -1,47 +1,77 @@
 """
 В файле содержится информация о беспилотных летательных аппаратах:
 Наименование	|   Крейсерская скорость (км/ч)  |	Продолжительность полета (мин)
-
 Разработать
 программу, позволяющую получить характеристики по наименованию;
 список БПЛА, способных достичь цели, находящейся на заданном расстоянии, не более чем за 10 минут.
 Предусмотреть корректный ответ сервера при отсутствии требуемой информации.
 """
-import socket
+
 from pandas import read_csv
-
-aircraft_info_file_path = "/Users/rokatyy/PycharmProjects/methods/client_server/aircraft_info.csv"
-max_flight_time = 600
-keyword = 'secret'
-
-
-class server:
-    def __init__(self, host='127.0.0.1', port=1337):
-        self.srv_sock = socket.socket()
-        self.srv_sock.bind((host, port))
-        self.srv_sock.listen(1)
-        self.conn, self.addr = self.srv_sock.accept()
-
-    def wait_ask(self):
-        while True:
-            data = self.conn.recv(1024)
-            if not data:
-                break
-            elif data == keyword:
-                secret_info = aircraft_info().data
-                self.conn.send(data)
+import socket
+from twisted.internet import reactor
+from twisted.internet.protocol import ServerFactory
+from twisted.protocols.basic import LineOnlyReceiver
 
 
-class aircraft_info:
-    def __init__(self, file_path):
-        self.data = []
-        self.file_path = file_path
+def get_data_from_file(file_path):
+    """
+    This method returns data from file
+    Args:
+        file_path (str) - full file path
+    Returns:
+        data (DataFrame object)
+    """
+    data = read_csv(file_path)
+    return data
 
-    def read_secret_file(self):
-        self.data = read_csv(self.file_path)
+
+class ChatProtocol(LineOnlyReceiver):
+    name = ""
+
+    def getName(self):
+        if self.name != "":
+            return self.name
+        return self.transport.getPeer().host
+
+    def connectionMade(self):
+        print("New connection from " + self.getName())
+        self.sendLine(b"Welcome to my my chat server.")
+        self.sendLine(b"Send '/NAME [new name]' to change your name.")
+        self.sendLine(b"Send '/EXIT' to quit.")
+        self.factory.clientProtocols.append(self)
+
+    def connectionLost(self, reason):
+        print(("Lost connection from " + self.getName()).encode('utf-8'))
+        self.factory.clientProtocols.remove(self)
+
+    def lineReceived(self, line):
+        print(self.getName() + " said " + line)
+        if line[:5] == "/NAME":
+            oldName = self.getName()
+            self.name = line[5:].strip()
+            self.factory.sendMessageToAllClients((oldName + " changed name to" + self.getName()).encode('utf-8'))
+        elif line == "/EXIT":
+            self.transport.loseConnection()
+        else:
+            self.factory.sendMessageToAllClients((self.getName() + " says " + line).encode('utf-8'))
+
+    def sendLine(self, line):
+        self.transport.write((line + "\r\n").encode('utf-8'))
 
 
-a = aircraft_info(aircraft_info_file_path)
-a.read_secret_file()
+class ChatProtocolFactory(ServerFactory):
+    protocol = ChatProtocol
 
-server().wait_ask()
+    def __init__(self):
+        self.clientProtocols = []
+
+    def sendMessageToAllClients(self, mesg):
+        for client in self.clientProtocols:
+            client.sendLine(mesg)
+
+
+print("Starting Server")
+factory = ChatProtocolFactory()
+reactor.listenTCP(12345, factory)
+reactor.run()
