@@ -37,10 +37,11 @@ class Calculator:
     """
     allowed_for_typing_symbols = "-+0123456789.*/)("
 
-    """
-    Initializing calculator window.
-    """
+
     def __init__(self):
+        """
+        Initializing calculator window.
+        """
         self.root.title("Calculator")
         self.draw_buttons()
         self.entry = Entry(self.root, width=33)
@@ -61,22 +62,23 @@ class Calculator:
             "±": lambda: self.handle_plus_minus_action(),
         }
 
-    """
-    Handling click on equally button.
-    Returns:
-        (string) - result of calculation or error text
-    """
     def handle_equally_action(self):
+        """
+        Handling click on equally button.
+        Returns:
+            (string) - result of calculation or error text
+        """
         try:
             return "=" + str(eval(self.entry.get()))
         except:
             messagebox.showerror("Error!", "Check the correctness of data")
             return "Error!"
 
-    """
-    Handling click on plus-minus button.
-    """
+
     def handle_plus_minus_action(self):
+        """
+        Handling click on plus-minus button.
+        """
         if "=" in self.entry.get():
             self.entry.delete(0, END)
         typed_symbol = self.entry.get()
@@ -85,10 +87,11 @@ class Calculator:
         else:
             self.entry.insert(0, "-")
 
-    """
-    Draw buttons for calculation actions.
-    """
+
     def draw_buttons(self):
+        """
+        Draw buttons for calculation actions.
+        """
         row = 1
         column = 0
         for i in self.button_titles:
@@ -99,19 +102,21 @@ class Calculator:
                 column = 0
                 row += 1
 
-    """
-    Show error for empty expressions field.
-    """
+
     @staticmethod
     def show_empty_error():
+        """
+        Show error for empty expressions field.
+        """
         messagebox.showerror("Error!", "You did not enter the number!")
 
-    """
-    Handling click on calculator button.
-    Args:
-        ket (string) - type of calculation action
-    """
+
     def on_click(self, key):
+        """
+        Handling click on calculator button.
+        Args:
+            key (string) - type of calculation action
+        """
         global memory
         if key in self.functions_required_filled_field:
             if not self.entry.get():
