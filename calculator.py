@@ -6,9 +6,19 @@ import sys
 
 
 class Calculator:
+    """
+    Instance of `tkinter`.
+    """
     root = Tk()
+
+    """
+    How many buttons will be placed in a row.
+    """
     raw_button_size = 4
 
+    """
+    Title for calculation action buttons.
+    """
     button_titles = [
         "7", "8", "9", "+", "*",
         "4", "5", "6", "-", "/",
@@ -17,9 +27,19 @@ class Calculator:
         ")", "π", "e", "sin", "cos", "abs",
         "√2", "n!", "Clear", "=", "Exit"]
 
-    functions_required_filled_input = ["=", "sin", "cos", "ln", "abs", "√2", "n!", "xⁿ"]
+    """
+    Calculation actions, which require the field be filled.
+    """
+    functions_required_filled_field = ["=", "sin", "cos", "ln", "abs", "√2", "n!", "xⁿ"]
+
+    """
+    Symbols, which are allowed for typing on expressions field.
+    """
     allowed_for_typing_symbols = "-+0123456789.*/)("
 
+    """
+    Initializing calculator window.
+    """
     def __init__(self):
         self.root.title("Calculator")
         self.draw_buttons()
@@ -41,6 +61,11 @@ class Calculator:
             "±": lambda: self.handle_plus_minus_action(),
         }
 
+    """
+    Handling click on equally button.
+    Returns:
+        (string) - result of calculation or error text
+    """
     def handle_equally_action(self):
         try:
             return "=" + str(eval(self.entry.get()))
@@ -48,6 +73,9 @@ class Calculator:
             messagebox.showerror("Error!", "Check the correctness of data")
             return "Error!"
 
+    """
+    Handling click on plus-minus button.
+    """
     def handle_plus_minus_action(self):
         if "=" in self.entry.get():
             self.entry.delete(0, END)
@@ -57,8 +85,9 @@ class Calculator:
         else:
             self.entry.insert(0, "-")
 
-        return ""
-
+    """
+    Draw buttons for calculation actions.
+    """
     def draw_buttons(self):
         row = 1
         column = 0
@@ -70,19 +99,27 @@ class Calculator:
                 column = 0
                 row += 1
 
+    """
+    Show error for empty expressions field.
+    """
     @staticmethod
-    def error_empty_field():
+    def show_empty_error():
         messagebox.showerror("Error!", "You did not enter the number!")
 
+    """
+    Handling click on calculator button.
+    Args:
+        ket (string) - type of calculation action
+    """
     def on_click(self, key):
         global memory
-        if key in self.functions_required_filled_input:
+        if key in self.functions_required_filled_field:
             if not self.entry.get():
-                self.error_empty_field()
+                self.show_empty_error()
                 return
             for char in self.entry.get():
                 if char not in self.allowed_for_typing_symbols:
-                    self.error_empty_field()
+                    self.show_empty_error()
                     return
 
         if key == "Clear":
