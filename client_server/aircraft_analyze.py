@@ -22,10 +22,13 @@ def solver(distance, file_path):
     Returns:
         result_name (str) - name of aircraft
     """
-    distance = int(distance.decode('utf-8'))
-    data = reformat_aircraft_info(get_data_from_file(file_path))
-    result_name = [i for i in data if data[i] >= distance]
-    return bool(result_name) and result_name or 'No such aircraft'
+    try:
+        distance = int(distance.decode('utf-8', errors = 'ignore').replace('\\r\\n',''))
+        data = get_data_from_file(file_path)
+        result_name = [i for i in data if data[i] >= distance]
+        return bool(result_name) and 'Aircrafts:\n'+'\n'.join(result_name) or 'No such aircraft'
+    except:
+        pass
 
 
 def get_max_distance(speed, time):

@@ -14,22 +14,31 @@ max_flight_time = 10
 data_path = "/Users/rokatyy/PycharmProjects/methods/client_server/aircraft_info.csv"
 
 serv_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, proto=0)
-serv_sock.bind(('', 53210))
+serv_sock.bind(('', 53211))
 serv_sock.listen(10)
 
 while True:
-    # Бесконечно обрабатываем входящие подключения
     client_sock, client_addr = serv_sock.accept()
     print('Connected by', client_addr)
+    client_sock.sendall(b'Please enter the required distance: \n')
 
     while True:
-        # Пока клиент не отключился, читаем передаваемые
-        # им данные и отправляем их обратно
-        data = client_sock.recv(1024)
-        result = solver(data, data_path)
+        try:
+            data = client_sock.recv(1024)
+        except OSError:
+            print('Socket was closed')
+            exit(0)
+        result = solver(data, data_path)+'\n'
+        try:
+            result = result.encode('utf-8')
+        except Exception as e:
+            pass
         if not data:
-            # Клиент отключился
             break
-        client_sock.sendall(result)
+        try:
+            client_sock.sendall(result)
+            client_sock.close()
+        except Exception as e:
+            print('Impossible to send data. Check connection. Error: {}'.format(e))
 
     client_sock.close()
