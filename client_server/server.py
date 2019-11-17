@@ -9,9 +9,10 @@
 
 from pandas import read_csv
 import socket
-from twisted.internet import reactor
-from twisted.internet.protocol import ServerFactory
-from twisted.protocols.basic import LineOnlyReceiver
+
+# max time for flight in minutes
+max_flight_time = 10
+data_path = "/Users/rokatyy/PycharmProjects/methods/client_server/aircraft_info.csv"
 
 
 def get_data_from_file(file_path):
@@ -23,55 +24,43 @@ def get_data_from_file(file_path):
         data (DataFrame object)
     """
     data = read_csv(file_path)
-    return data
+    return reformat_aircraft_info(data)
 
 
-class ChatProtocol(LineOnlyReceiver):
-    name = ""
-
-    def getName(self):
-        if self.name != "":
-            return self.name
-        return self.transport.getPeer().host
-
-    def connectionMade(self):
-        print("New connection from " + self.getName())
-        self.sendLine(b"Welcome to my my chat server.")
-        self.sendLine(b"Send '/NAME [new name]' to change your name.")
-        self.sendLine(b"Send '/EXIT' to quit.")
-        self.factory.clientProtocols.append(self)
-
-    def connectionLost(self, reason):
-        print(("Lost connection from " + self.getName()).encode('utf-8'))
-        self.factory.clientProtocols.remove(self)
-
-    def lineReceived(self, line):
-        print(self.getName() + " said " + line)
-        if line[:5] == "/NAME":
-            oldName = self.getName()
-            self.name = line[5:].strip()
-            self.factory.sendMessageToAllClients((oldName + " changed name to" + self.getName()).encode('utf-8'))
-        elif line == "/EXIT":
-            self.transport.loseConnection()
-        else:
-            self.factory.sendMessageToAllClients((self.getName() + " says " + line).encode('utf-8'))
-
-    def sendLine(self, line):
-        self.transport.write((line + "\r\n").encode('utf-8'))
+def solver(distance, data):
+    """
+    This method gets distance and returns name of aircraft depends on it, IF there is no suitable aircraft method returns None
+    Args:
+        distance (int)
+        data (DataFrame object) - data about aircrafts (name, speed, time)
+    Returns:
+        result_name (str) - name of aircraft
+    """
+    data = reformat_aircraft_info(data)
+    result_name = [i for i in data if data[i] >= distance]
+    return bool(result_name) and result_name or 'No such aircraft'
 
 
-class ChatProtocolFactory(ServerFactory):
-    protocol = ChatProtocol
-
-    def __init__(self):
-        self.clientProtocols = []
-
-    def sendMessageToAllClients(self, mesg):
-        for client in self.clientProtocols:
-            client.sendLine(mesg)
+def get_max_distance(speed, time):
+    return speed * int(time)
 
 
-print("Starting Server")
-factory = ChatProtocolFactory()
-reactor.listenTCP(12345, factory)
-reactor.run()
+def reformat_aircraft_info(data):
+    """
+    This method changes the type and structure of the given data.
+    Returns a dictionary from the name and maximum range of the aircraft.
+    Args:
+        data (DataFrame object)
+    Returns:
+        distance_info (dict) where:
+                keys -- names
+                values -- max flight distance in kilometers
+    """
+    distance_info = dict.fromkeys(data['Name'].to_list(), 0)
+    names = data['Name'].to_list()
+    speed = data['speed'].to_list()
+    time = data['time'].to_list()
+    for i in range(len(speed)):
+        speed[i] = int(speed[i]) / 60
+        distance_info[names[i]] = get_max_distance(speed[i], time[i])
+    return distance_info
