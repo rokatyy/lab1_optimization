@@ -6,19 +6,8 @@ import sys
 
 
 class Calculator:
-    """
-    Instance of `tkinter`.
-    """
     root = Tk()
-
-    """
-    How many buttons will be placed in a row.
-    """
     raw_button_size = 4
-
-    """
-    Title for calculation action buttons.
-    """
     button_titles = [
         "7", "8", "9", "+", "*",
         "4", "5", "6", "-", "/",
@@ -27,16 +16,8 @@ class Calculator:
         ")", "π", "e", "sin", "cos", "abs",
         "√2", "n!", "Clear", "=", "Exit"]
 
-    """
-    Calculation actions, which require the field be filled.
-    """
     functions_required_filled_field = ["=", "sin", "cos", "ln", "abs", "√2", "n!", "xⁿ"]
-
-    """
-    Symbols, which are allowed for typing on expressions field.
-    """
     allowed_for_typing_symbols = "-+0123456789.*/)("
-
 
     def __init__(self):
         """
@@ -74,7 +55,6 @@ class Calculator:
             messagebox.showerror("Error!", "Check the correctness of data")
             return "Error!"
 
-
     def handle_plus_minus_action(self):
         """
         Handling click on plus-minus button.
@@ -86,7 +66,6 @@ class Calculator:
             self.entry.delete(0)
         else:
             self.entry.insert(0, "-")
-
 
     def draw_buttons(self):
         """
@@ -102,14 +81,12 @@ class Calculator:
                 column = 0
                 row += 1
 
-
     @staticmethod
     def show_empty_error():
         """
         Show error for empty expressions field.
         """
         messagebox.showerror("Error!", "You did not enter the number!")
-
 
     def on_click(self, key):
         """
