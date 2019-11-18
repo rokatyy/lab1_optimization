@@ -66,6 +66,7 @@ class Calculator:
             self.entry.delete(0)
         else:
             self.entry.insert(0, "-")
+        return ""
 
     def draw_buttons(self):
         """
