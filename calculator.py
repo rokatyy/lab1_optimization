@@ -8,7 +8,6 @@ import sys
 class Calculator:
     root = Tk()
     raw_button_size = 4
-
     button_titles = [
         "7", "8", "9", "+", "*",
         "4", "5", "6", "-", "/",
@@ -17,10 +16,13 @@ class Calculator:
         ")", "π", "e", "sin", "cos", "abs",
         "√2", "n!", "Clear", "=", "Exit"]
 
-    functions_required_filled_input = ["=", "sin", "cos", "ln", "abs", "√2", "n!", "xⁿ"]
+    functions_required_filled_field = ["=", "sin", "cos", "ln", "abs", "√2", "n!", "xⁿ"]
     allowed_for_typing_symbols = "-+0123456789.*/)("
 
     def __init__(self):
+        """
+        Initializing calculator window.
+        """
         self.root.title("Calculator")
         self.draw_buttons()
         self.entry = Entry(self.root, width=33)
@@ -42,6 +44,11 @@ class Calculator:
         }
 
     def handle_equally_action(self):
+        """
+        Handling click on equally button.
+        Returns:
+            (string) - result of calculation or error text
+        """
         try:
             return "=" + str(eval(self.entry.get()))
         except:
@@ -49,6 +56,9 @@ class Calculator:
             return "Error!"
 
     def handle_plus_minus_action(self):
+        """
+        Handling click on plus-minus button.
+        """
         if "=" in self.entry.get():
             self.entry.delete(0, END)
         typed_symbol = self.entry.get()
@@ -56,10 +66,12 @@ class Calculator:
             self.entry.delete(0)
         else:
             self.entry.insert(0, "-")
-
         return ""
 
     def draw_buttons(self):
+        """
+        Draw buttons for calculation actions.
+        """
         row = 1
         column = 0
         for i in self.button_titles:
@@ -71,18 +83,26 @@ class Calculator:
                 row += 1
 
     @staticmethod
-    def error_empty_field():
+    def show_empty_error():
+        """
+        Show error for empty expressions field.
+        """
         messagebox.showerror("Error!", "You did not enter the number!")
 
     def on_click(self, key):
+        """
+        Handling click on calculator button.
+        Args:
+            key (string) - type of calculation action
+        """
         global memory
-        if key in self.functions_required_filled_input:
+        if key in self.functions_required_filled_field:
             if not self.entry.get():
-                self.error_empty_field()
+                self.show_empty_error()
                 return
             for char in self.entry.get():
                 if char not in self.allowed_for_typing_symbols:
-                    self.error_empty_field()
+                    self.show_empty_error()
                     return
 
         if key == "Clear":
